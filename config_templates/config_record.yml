@@ -1,0 +1,50 @@
+ffmpeg:
+  hwaccel_args: preset-vaapi
+mqtt:
+  enabled: false
+record:
+  enabled: true
+go2rtc:
+  streams:
+    camera:
+      - rtsp://<usuario camara>:<contraseña camara>@<ip camara>:<puerto rtsp camara>/stream_main
+      - ffmpeg:camera#audio=opus
+    camera_sub:
+      - rtsp://<usuario camara>:<contraseña camara>@<ip camara>:<puerto rtsp camara>/stream_sub
+cameras:
+  camera:
+    ffmpeg:
+      output_args:
+        record: preset-record-generic
+      inputs:
+        - path: rtsp://127.0.0.1:8554/camera
+          input_args: preset-rtsp-restream
+          roles:
+            - record
+        - path: rtsp://127.0.0.1:8554/camera_sub
+          input_args: preset-rtsp-restream
+          roles:
+            - detect
+    onvif:
+      host: <ip camara>
+      port: <puerto onvif camara>
+      user: <usuario camara>
+      password: <contraseña camara>
+    detect:
+      width: 1280
+      height: 720
+    record:
+      enabled: true
+      continuous:
+        days: 10
+      motion:
+        days: 14
+      alerts:
+        retain:
+          days: 30
+          mode: all
+      detections:
+        retain:
+          days: 30
+          mode: all
+version: 0.17-0

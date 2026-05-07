@@ -1,0 +1,24 @@
+services:
+  frigate:
+    container_name: frigate
+    privileged: true
+    restart: on-failure
+    image: ghcr.io/blakeblackshear/frigate:stable
+    shm_size: "256mb" 
+    devices:
+      - /dev/dri/renderD128:/dev/dri/renderD128
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ./config_templates/config_record.yml:/config/config.yml # cambiar config_record por el template a usar
+      - ./storage:/media/frigate
+      - ./logs:/config/logs
+      - type: tmpfs
+        target: /tmp/cache
+        tmpfs:
+          size: 500000000
+    ports:
+      - "5000:5000" # Frigate
+      - "1984:1984" # go2rtc
+      - "8554:8554" # RTSP
+    environment:
+      - TZ=America/Santiago
