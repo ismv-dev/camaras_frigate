@@ -2,14 +2,15 @@ services:
   frigate:
     container_name: frigate
     privileged: true
-    restart: on-failure
+    restart: unless-stopped
+    stop_grace_period: 30s
     image: ghcr.io/blakeblackshear/frigate:stable
-    shm_size: "256mb" 
+    shm_size: "128mb" 
     devices:
       - /dev/dri/renderD128:/dev/dri/renderD128
     volumes:
       - /etc/localtime:/etc/localtime:ro
-      - ./config_templates/config_record.yml:/config/config.yml # cambiar config_record por el template a usar
+      - ./config.yml:/config/config.yml
       - ./storage:/media/frigate
       - ./logs:/config/logs
       - type: tmpfs
@@ -17,8 +18,10 @@ services:
         tmpfs:
           size: 500000000
     ports:
-      - "5000:5000" # Frigate
-      - "1984:1984" # go2rtc
+      # - "5000:5000" # UI sin autenticado
+      - "8971:8971" # UI autenticada
       - "8554:8554" # RTSP
+      - "8555:8555/tcp" # WebRTC
+      - "8555:8555/udp"
     environment:
-      - TZ=America/Santiago
+      - TZ=America/Santiago # Zona horaria

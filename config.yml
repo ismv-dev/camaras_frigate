@@ -7,15 +7,15 @@ record:
 go2rtc:
   streams:
     camera:
-      - rtsp://<usuario camara>:<contraseña camara>@<ip camara>:<puerto rtsp camara>/stream_main
-      - ffmpeg:camera#audio=opus
+      - rtsp://<usuario camara>:<contraseña camara>@<ip camara>:554/stream_main # puerto y ruta pueden ser distintos
+      - ffmpeg:camera#audio=opus # se puede cambiar por aac
     camera_sub:
-      - rtsp://<usuario camara>:<contraseña camara>@<ip camara>:<puerto rtsp camara>/stream_sub
+      - rtsp://<usuario camara>:<contraseña camara>@<ip camara>:554/stream_sub # puerto y ruta pueden ser distintos
 cameras:
   camera:
     ffmpeg:
       output_args:
-        record: preset-record-generic
+        record: preset-record-generic-audio-aac # se puede cambiar aac por copy o quitar "-audio-aac"
       inputs:
         - path: rtsp://127.0.0.1:8554/camera
           input_args: preset-rtsp-restream
@@ -31,12 +31,13 @@ cameras:
       user: <usuario camara>
       password: <contraseña camara>
     detect:
+      enabled: true
       width: 1280
       height: 720
     record:
       enabled: true
       continuous:
-        days: 10
+        days: 7
       motion:
         days: 14
       alerts:
@@ -47,4 +48,8 @@ cameras:
         retain:
           days: 30
           mode: all
+    live:
+      streams:
+        Main Stream: camera
+        Sub Stream: camera_sub
 version: 0.17-0
